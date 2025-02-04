@@ -1,0 +1,18 @@
+<!-- myapp\templates\myapp\home.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Item List</title>
+</head>
+<body>
+    <h1>Item List</h1>
+    <ul>
+        {% for post in posts %}
+            <li>{{ post.title }} - {{ item.content }} - {{post.published_date}}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'create_post' %}">Create New Item</a><br>
+    <a href="{% url 'home' %}">Back to Home</a>
+</body>
+
+</html>

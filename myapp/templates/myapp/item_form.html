@@ -1,0 +1,17 @@
+<!-- myapp\templates\myapp\item_form.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Item</title>
+</head>
+<body>
+    <h1>Create Item</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+
+    </form>
+    <a href="{% url 'home' %}">Back to Home</a>
+</body>
+</html>
