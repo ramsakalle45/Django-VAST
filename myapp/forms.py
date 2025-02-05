@@ -10,9 +10,10 @@ class ContactForm(forms.Form):
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ['name', 'description']    
+        fields = ['name', 'description']   
         
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content', 'published_date']      
+        fields = ['title', 'content', 'published_date']         
+        

@@ -3,12 +3,11 @@ from django.db import models
 from django.utils import timezone
 
 class Post(models.Model):
-    title = models.CharField(max_length=100)
-    content = models.TextField()
-    published_date = models.DateField(default=timezone.now)
-
+    title=models.CharField(max_length=100)
+    content=models.TextField()
+    published_date=models.DateField(default=timezone.now)
     def __str__(self):
-        return self.title
+        return self.title, self.content
     
 class Item(models.Model):
     name = models.CharField(max_length=100)
