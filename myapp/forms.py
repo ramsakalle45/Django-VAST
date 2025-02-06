@@ -1,6 +1,6 @@
 # myapp\forms.py
 from django import forms
-from .models import Item, Post
+from .models import Item, Post, Author, Book
 
 class ContactForm(forms.Form):
     name = forms.CharField(max_length=100)
@@ -17,3 +17,12 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ['title', 'content', 'published_date']         
         
+class AuthorForm(forms.ModelForm):
+    class Meta:
+        model = Author
+        fields = ['name', 'bio']
+
+class BookForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = ['title', 'author', 'published_date']

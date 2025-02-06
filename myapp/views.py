@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .forms import ContactForm, ItemForm, PostForm
-from .models import Item, Post
+from .forms import ContactForm, ItemForm, PostForm, AuthorForm, BookForm
+from .models import Item, Post, Book
 from .serializers import ItemSerializer, PostSerializer
 from flask import request
 
@@ -53,7 +53,29 @@ def item_list(request):
     return render(request, 'myapp/item_list.html', {'items': items})
 
 
+def book_list(request):
+    books = Book.objects.all()
+    return render(request, 'myapp/book_list.html', {'books': books})
 
+def add_book(request):
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')
+    else:
+        form = BookForm()
+    return render(request, 'myapp/book_form.html', {'form': form})
+
+def add_author(request):
+    if request.method == 'POST':
+        form = AuthorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')
+    else:
+        form = AuthorForm()
+    return render(request, 'myapp/author_form.html', {'form': form})
 
 
 
@@ -187,3 +209,110 @@ def post_detail_api(request, pk):
     elif request.method == 'DELETE':
         posts.delete()
         return Response({"message": "Item deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+from .models import Book, Author 
+from .serializers import BookSerializer, AuthorSerializer
+
+@api_view(['GET', 'POST'])
+def book_list_api(request):
+    if request.method == 'GET':
+        items = Book.objects.all()
+        serializer = BookSerializer(items, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        # Debugging: Print request content type and data
+        print("Content-Type:", request.content_type)
+        print("Received Data:", request.data)
+
+        # Check if data exists
+        if not request.data:
+            return Response({"error": "Empty request body. Make sure to send JSON data."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = BookSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET', 'PUT', 'DELETE'])
+def book_detail_api(request, pk):
+    try:
+        posts = Book.objects.get(pk=pk)
+        
+    except Book.DoesNotExist:
+        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = BookSerializer(posts)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        print("Received Data:", request.data)  # Debugging - Check in Django console
+        if not request.data:
+            return Response({"error": "No data received"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = BookSerializer(posts, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        posts.delete()
+        return Response({"message": "Item deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+# Single API for Author
+@api_view(['GET', 'POST'])
+def author_list_api(request):
+    if request.method == 'GET':
+        items = Author.objects.all()
+        serializer = AuthorSerializer(items, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        # Debugging: Print request content type and data
+        print("Content-Type:", request.content_type)
+        print("Received Data:", request.data)
+
+        # Check if data exists
+        if not request.data:
+            return Response({"error": "Empty request body. Make sure to send JSON data."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = AuthorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
+ 
+ #API for operating with the primary key
+@api_view(['GET', 'PUT', 'DELETE'])
+def author_detail_api(request, pk):
+    try:
+        posts = Author.objects.get(pk=pk)
+        
+    except Author.DoesNotExist:
+        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = AuthorSerializer(posts)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        print("Received Data:", request.data)  # Debugging - Check in Django console
+        if not request.data:
+            return Response({"error": "No data received"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = AuthorSerializer(posts, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        posts.delete()
+        return Response({"message": "Item deleted successfully"}, status=status.HTTP_204_NO_CONTENT)    
